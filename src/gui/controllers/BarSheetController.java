@@ -201,7 +201,8 @@ public class BarSheetController implements Initializable, ControlledScreen {
     //checks if a card is being read and show the person
     public void keyPressedHandler(KeyEvent event){
         if(event.getCode().equals(KeyCode.ENTER))
-        {
+        {   
+            curPaymentMethod = Transaction.CARD;
             nameLabel.setText("Jaap Wesdorp");
             nameLabel.setDisable(false);
             ageLabel.setDisable(false);
