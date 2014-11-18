@@ -16,6 +16,8 @@ public class Validation {
 		dB = dBIn;
 		lastClientLogID = 0;
 		lastAdminChangeID = 0;
+        // set the client log pointer to the last
+        validateLastClientLog();
 	}
 	
 	//check for clients that have not send an update for more then CLIENT_UPDATE_INTERVAL seconds
@@ -37,7 +39,7 @@ public class Validation {
 		//now change the inactive client_is_active states to false
 		dB.runUpdate("UPDATE clients SET client_is_active = false WHERE 1=2 "+ clientIDString);
 		for(int i =0; i < clientIDs.size();i++)
-		dB.runUpdate(String.format("INSERT INTO client_logs(client_id,client_log_type,log_date) VALUES (%d , false, '0000-00-00 00:00:00')",clientIDs.get(i)));
+            dB.runUpdate(String.format("INSERT INTO client_logs(client_id,client_log_type,log_date) VALUES (%d , false, '0000-00-00 00:00:00')",clientIDs.get(i)));
 		dB.commit();
 		return ret;
 		

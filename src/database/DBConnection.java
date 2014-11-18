@@ -17,12 +17,10 @@ public class DBConnection {
 
 	//default constructor  
 	private void startConnection(){
-		try {
-			//load the mysql driver
+		try {//load the mysql driver
 			Class.forName(DRIVER);
 		}
-		catch(ClassNotFoundException e)
-		{
+		catch(ClassNotFoundException e)	{
 			e.printStackTrace();
 		}
 		//start the connection with autocommit false and isolation at serializable
@@ -31,18 +29,15 @@ public class DBConnection {
 			con.setAutoCommit(false);
 			con.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
 		}
-		catch(SQLException e)
-		{
+		catch(SQLException e){
 			e.printStackTrace();
 		}
 	}
-	public DBConnection()
-	{
+	public DBConnection(){
 		startConnection();
 	}
 	// constructor with room for custom database url, username and password
-	public DBConnection(String URLin, String USERNAMEin, String PASSWORDin )
-	{
+	public DBConnection(String URLin, String USERNAMEin, String PASSWORDin ){
 		URL=URLin;
 		USERNAME=USERNAMEin;
 		PASSWORD=PASSWORDin;
@@ -50,9 +45,8 @@ public class DBConnection {
 		startConnection();
 	}
 
-	//runs but does not commit a query on the database
-	public void runQuery(String queryIn)
-	{
+	//runs but does not commit a query on the database returns boolean of succes
+	public boolean runQuery(String queryIn)	{
 		try{
 			if(!con.isValid(1000)){//check if connection is still available
 				interrupted = true;
@@ -64,16 +58,16 @@ public class DBConnection {
 			result = st.executeQuery(queryIn);
 			//get metadata of the resultset
 			rsmd = result.getMetaData();
+            return true;
 		}
-		catch(SQLException e)
-		{
+		catch(SQLException e)		{
 			e.printStackTrace();
+            return false;
 		}
 	}
 
-	//runs a single update on the database
-	public void runUpdate(String queryIn)
-	{
+	//runs a single update on the database and a bool for succes
+	public boolean runUpdate(String queryIn){
 		try{
 			if(!con.isValid(1000)){//check if connection is still available
 				interrupted = true;
@@ -83,16 +77,16 @@ public class DBConnection {
 			st = con.createStatement();
 			//Run the update
 			st.executeUpdate(queryIn);
+            return true;
 		}
-		catch(SQLException e)
-		{
+		catch(SQLException e){
 			e.printStackTrace();
+            return false;
 		}
 		finally{//close the statement
 			try {
 				st.close();
 			} catch (SQLException e) {
-
 				e.printStackTrace();
 			}
 		}
@@ -100,14 +94,12 @@ public class DBConnection {
 
 
 	//return the ResultSet adress
-	public ResultSet getResult()
-	{
+	public ResultSet getResult()	{
 		return result;
 	}
 
 	//returns the next row in a string format spaced with tabs
-	public String getNextStr()
-	{
+	public String getNextStr()	{
 		String resultString = "";
 		try {
 			if(result.next()){
@@ -162,8 +154,7 @@ public class DBConnection {
 	}
 
 	//returns all the strings in a column in StringArray form
-	public String[] getColumnStr(int colNum)
-	{
+	public String[] getColumnStr(int colNum)	{
 		int nRows = 0;
 		int i = 0;
 		String[] ret;
@@ -191,15 +182,13 @@ public class DBConnection {
 			}
 			return ret;
 		}
-		else
-		{
+		else{
 			return null;
 		}
 
 	}
 	//Returns the specified column as an array of integers(works only if columns are integers)
-	public int[] getColumnInt(int colNum)
-	{
+	public int[] getColumnInt(int colNum){
 		int nRows = 0;
 		int i = 0;
 		int[] ret;
@@ -227,45 +216,53 @@ public class DBConnection {
 			}
 			return ret;
 		}
-		else
-		{
+		else{
 			return null;
 		}
-
 	}
 
 	//sets the transaction isolation level
-	public void setIsolationLevel(int iL)
-	{
+	public boolean setIsolationLevel(int iL){
 		try{
 			if(iL == Connection.TRANSACTION_NONE 
 					|| iL == Connection.TRANSACTION_READ_COMMITTED 
 					|| iL == Connection.TRANSACTION_READ_UNCOMMITTED 
 					|| iL == Connection.TRANSACTION_REPEATABLE_READ
-					|| iL == Connection.TRANSACTION_SERIALIZABLE)
+					|| iL == Connection.TRANSACTION_SERIALIZABLE){
 				con.setTransactionIsolation(iL);
+                return true;
+            }
+            return false;
 		}
-		catch(SQLException e)
-		{e.printStackTrace();}
+		catch(SQLException e){
+            e.printStackTrace();
+            return false;
+        }
 	}
 
 	//commits the current transaction
-	public void commit()
+	public boolean commit()
 	{
 		try{
-			con.commit();
+            con.commit();
+            return true;
 		}
-		catch(SQLException e)
-		{e.printStackTrace();}
+		catch(SQLException e){
+            e.printStackTrace();
+            return false;
+        }
 	}
 	//rollsback the current transaction
-	public void rollback()
+	public boolean rollback()
 	{
 		try{
 			con.rollback();
+            return true;
 		}
-		catch(SQLException e)
-		{e.printStackTrace();}
+		catch(SQLException e){
+            e.printStackTrace();
+            return false;
+        }
 	}
 
 	public boolean interrupted(){

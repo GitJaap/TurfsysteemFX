@@ -20,20 +20,21 @@ public class DataInitializer {
 	private ProductPriceClass ppc;
 	private Client curClient;
 	private Bar curBar;
-
-
-	//create a format for displaying cash amount
-	private DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols(Locale.GERMAN);
+    private int adminID;
+    //create a format for displaying cash amount
+	private DecimalFormatSymbols otherSymbols;
 	private DecimalFormat df;
 
 	public DataInitializer()
 	{
-		reInitializeStart();
 		// create the right format for displaying the cash amounts
+        otherSymbols = new DecimalFormatSymbols(Locale.GERMAN);
 		otherSymbols.setDecimalSeparator(',');
 		otherSymbols.setGroupingSeparator('.'); 
 		df = new DecimalFormat("\u20ac0.00", otherSymbols);
-		ppc = new ProductPriceClass();
+		//initialize other variables
+        ppc = new ProductPriceClass();
+        reInitializeStart();
 
 	}
 	public void reInitializeStart(){
@@ -42,7 +43,7 @@ public class DataInitializer {
 		//retrieve only the visible bars from the database
 		dB.runQuery("Select bar_id, bar_name, current_bar_cash from bars where bar_visibility = true");
 		dB.commit();
-		bars= new ArrayList<Bar>();
+		bars = new ArrayList<>();
 		while(dB.next())
 			bars.add(new Bar(dB.getInt(1),dB.getStr(2),dB.getInt(3)));
 		
@@ -52,13 +53,13 @@ public class DataInitializer {
 			dB.runQuery(String.format("Select client_id,client_name FROM clients WHERE bar_id = %d AND client_visibility = true AND client_is_active = false",bars.get(j).getID()));
 			dB.commit();
 			while(dB.next())
-				bars.get(j).addClient(new Client(dB.getInt(1),dB.getStr(2)));	
+				bars.get(j).addClient(new Client(dB.getInt(1),dB.getStr(2), bars.get(j)));	
 		}
 	}
 	public void reInitializeBar(){
 		System.out.println(ppc);
 		//now insert for this price_class the product_classes like eten drinken shift
-		dB.runQuery("Select product_class_id,class_name,class_color_rgb from product_class");
+		dB.runQuery("Select product_class_id,class_name,class_color_hex from product_class");
 		dB.commit();
 		while(dB.next())
 			ppc.addProductClass(new ProductClass(dB.getInt(1),dB.getStr(2),dB.getStr(3)));
@@ -121,5 +122,7 @@ public class DataInitializer {
 	{
 		return curBar;
 	}
-	
+    public int getAdminID(){
+        return 1;
+    }
 }

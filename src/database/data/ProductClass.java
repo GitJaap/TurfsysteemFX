@@ -6,18 +6,15 @@ public class ProductClass {
 	private int id;
 	private String name;
 	private ArrayList<Product> products;
-	private java.awt.Color color;
+	private String color;
 	
 	public ProductClass(int idIn, String nameIn, ArrayList<Product> prIn, String colorIn)
 	{
 		id = idIn;
 		name= nameIn;
 		products=prIn;
-		//create the color from the string 'red,gre,blu'
-		int red = Integer.parseInt(colorIn.substring(0, 3));
-		int green = Integer.parseInt(colorIn.substring(4,7));
-		int blue = Integer.parseInt(colorIn.substring(8,11));
-		color = new java.awt.Color(red,green,blue);
+		//create the color from the string with hexadecimal numbers
+		color = colorIn;
 	}
 	
 	public ProductClass(int idIn, String nameIn, String colorIn)
@@ -25,10 +22,7 @@ public class ProductClass {
 		id = idIn;
 		name= nameIn;
 		//create the color from the string 'red,gre,blu'
-		int red = Integer.parseInt(colorIn.substring(0, 3));
-		int green = Integer.parseInt(colorIn.substring(4,7));
-		int blue = Integer.parseInt(colorIn.substring(8,11));
-		color = new java.awt.Color(red,green,blue);
+		color = colorIn;
 		products = new ArrayList<Product>();
 	}
 	public ProductClass(){products = new ArrayList<Product>();}
@@ -66,12 +60,12 @@ public class ProductClass {
 		return null;
 	}
 	public int getProductsSize(){return products.size();}
-	public java.awt.Color getColor(){return color;}
+	public String getColor(){return color;}
 	
 	//setters
 	public void setID(int idIn){id= idIn;}
 	public void setName(String nameIn){name=nameIn;}
-	public void setColor(java.awt.Color colorIn){color=colorIn;}
+	public void setColor(String colorIn){color=colorIn;}
 	public void setProducts(ArrayList<Product> productsIn){products = productsIn;}
 	public void addProduct(Product productIn){products.add(productIn);}
 	public void setProduct(Product productIn,int productIndex)

@@ -14,7 +14,7 @@ import javafx.stage.Stage;
 
 public class ScreensFrameWork extends Application {
      //declare the names and ids of fxml files 
-    public static String BARFile = "/gui/resources/BarSheet.fxml";
+    public static String BARFile = "/gui/resources/BarSheet2.fxml";
     public static String BARID = "BAR";
     public static String LOGINFile = "/gui/resources/LoginSheet.fxml";
     public static String LOGINID = "LOGIN";
@@ -29,7 +29,7 @@ public class ScreensFrameWork extends Application {
         mainContainer.loadScreen(BARID, BARFile);
         mainContainer.setScreen(LOGINID);
         Scene scene = new Scene(mainContainer);
-        scene.getStylesheets().add("/gui/resources/barsheet.css");
+        //scene.getStylesheets().add("/gui/resources/barsheet.css");
         primaryStage.setMaximized(true);
         primaryStage.setScene(scene);
         primaryStage.show();

@@ -3,10 +3,12 @@ package database.data;
 public class Client {
 	private int id;
 	private String name;
+    private Bar bar;
 
-	public Client(int idIn, String nameIn){
+	public Client(int idIn, String nameIn, Bar barIn){
 		id=idIn;
 		name=nameIn;
+        bar = barIn;
 	}
 	public Client()
 	{
@@ -15,9 +17,15 @@ public class Client {
 	//getters
 	public int getID(){return id;}
 	public String getName(){return name;}
-	
+	public Bar getBar(){return bar;}
 	//setters
 	public void setID(int idIn){id = idIn;}
 	public void setName(String nameIn){name=nameIn;}
+    
+    //overide toString function used in choicebox
+    public String toString(){
+        return bar.getName() + " - " + name;
+    }
+
 	
 }

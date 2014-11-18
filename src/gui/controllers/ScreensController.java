@@ -59,6 +59,7 @@ public class ScreensController  extends StackPane {
             //set the screencontroller and DataInitializer
             myScreenController.setScreenParent(this);
             myScreenController.setDataInitializer(init);
+            myScreenController.loadComponents();
             // now add the controller adress to the node so it is usable later in the program
             loadScreen.setUserData(myScreenController);
             addScreen(name, loadScreen);

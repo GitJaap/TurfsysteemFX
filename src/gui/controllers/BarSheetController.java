@@ -12,6 +12,11 @@ import java.util.ResourceBundle;
 import javafx.fxml.Initializable;
 import database.data.*;
 import gui.handlers.ProductButtonHandler;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.event.ActionEvent;
@@ -22,6 +27,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.util.Duration;
 
 /**
  * FXML Controller class
@@ -31,7 +37,7 @@ import javafx.scene.layout.GridPane;
 public class BarSheetController implements Initializable, ControlledScreen {
     
     public final int NProductCols = 5;
-    public final int MAXProducts = 20;    
+    public final int MAXProducts = 40;    
     
     private int curPaymentMethod = 0;
     private ScreensController myController;
@@ -53,6 +59,7 @@ public class BarSheetController implements Initializable, ControlledScreen {
     @FXML private Label ageLabel;
     @FXML private Label balanceLabel;
     @FXML private ImageView fotoView;
+    @FXML private Label clockLabel;
     //declare components to fit in productPane
     //since they vary they cannot be defined in FXML
     private Button[][] productButtons;
@@ -68,16 +75,19 @@ public class BarSheetController implements Initializable, ControlledScreen {
     public void initialize(URL url, ResourceBundle rb) {
         multiplication = 1;
         historyText = "";
+        
+        //create the clock
+        bindToTime(clockLabel);
     }    
+   
     
-    public void initBarProducts()
+    @Override public void loadComponents()
     {
         //load the products from the database
         ppc = init.getPPC();
         init.getVN().validateProducts(ppc);
         init.reInitializeBar();
         productButtonHandler = new ProductButtonHandler(this,init);
-        System.out.println(ppc.getID());
         //initialize the productButtons
 		productButtons =  new Button[ppc.getProductClassesSize()][];
         orderedButtons = new Button[ppc.getProductClassesSize()][];
@@ -104,6 +114,7 @@ public class BarSheetController implements Initializable, ControlledScreen {
                 {
                     productButtons[i][j] = new Button();
                     productButtons[i][j].setText(ppc.getProductName(i, j) +"\n"+ init.getdf().format((double)ppc.getProductPrice(i, j)/100));
+                    productButtons[i][j].setStyle(String.format("-fx-background-color: linear-gradient(#FFFFFF, #B3B3B3), #%s; -fx-background-insets: 0, 2;",ppc.getProductClass(i).getColor()));
                     productPane.add(productButtons[i][j],gridColumnIndex,gridRowIndex);
                     productButtons[i][j].setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
                     gridColumnIndex ++;
@@ -172,7 +183,7 @@ public class BarSheetController implements Initializable, ControlledScreen {
     
     public void orderButtonHandler(ActionEvent e){
         //execute the transaction
-        String tempText = Transaction.doProductTransaction(init, orders, curPaymentMethod, 1, 1)+"\n";
+        String tempText = Transaction.doProductTransaction(init, orders, curPaymentMethod)+"\n";
         //show the transaction in the historyField
         tempText +="U heeft de volgende producten besteld: \n";
 		int totalPrice = 0;
@@ -236,6 +247,22 @@ public class BarSheetController implements Initializable, ControlledScreen {
     }
     
     
+  private void bindToTime(Label label) {
+    Timeline timeline = new Timeline(
+      new KeyFrame(Duration.seconds(0),
+        new EventHandler<ActionEvent>() {
+          @Override public void handle(ActionEvent actionEvent) {
+            Calendar time = Calendar.getInstance();
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
+            label.setText(simpleDateFormat.format(time.getTime()));
+          }
+        }
+      ),
+      new KeyFrame(Duration.seconds(1))
+    );
+    timeline.setCycleCount(Animation.INDEFINITE);
+    timeline.play();
+   }
     
     //getters and setters used in the external file ProductButtonHandler
     public Button[][] getProductButtons(){return productButtons;}
