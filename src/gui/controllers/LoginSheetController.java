@@ -45,6 +45,7 @@ public class LoginSheetController implements Initializable, ControlledScreen {
                 barChooser.getItems().add(client);
             });
         });
+       barChooser.getSelectionModel().selectFirst();  
     }
             
     
