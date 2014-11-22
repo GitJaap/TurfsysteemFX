@@ -86,8 +86,10 @@ public class DBConnection {
 		finally{//close the statement
 			try {
 				st.close();
+                return true;
 			} catch (SQLException e) {
 				e.printStackTrace();
+                return false;
 			}
 		}
 	}

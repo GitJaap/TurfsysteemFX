@@ -29,7 +29,7 @@ public class ScreensFrameWork extends Application {
         mainContainer.loadScreen(BARID, BARFile);
         mainContainer.setScreen(LOGINID);
         Scene scene = new Scene(mainContainer);
-        //scene.getStylesheets().add("/gui/resources/barsheet.css");
+        scene.getStylesheets().add("/gui/resources/loginsheet.css");
         primaryStage.setMaximized(true);
         primaryStage.setScene(scene);
         primaryStage.show();

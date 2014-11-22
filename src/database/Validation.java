@@ -5,7 +5,7 @@ import database.data.ProductPriceClass;
 
 import java.util.*;
 public class Validation {
-	private final int CLIENT_UPDATE_INTERVAL_SEC = 2;
+	private final int CLIENT_UPDATE_INTERVAL_SEC = 600;
 	
 	private DBConnection dB;
 	private int lastClientLogID;

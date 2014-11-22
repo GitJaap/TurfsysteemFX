@@ -37,9 +37,13 @@ public class LoginSheetController implements Initializable, ControlledScreen {
     
     @Override
     public void loadComponents(){
-        //load the bars and clients in the loginscreen combobox
-        //check if clients are up to date
+        /*
+        loads the bars and clients in the loginscreen combobox
+        */
+        //set the last client update to now
         init.getVN().validateClients();
+        init.reInitializeClients();
+        barChooser.getItems().clear();
         init.getBars().stream().forEach((bar) -> {
             bar.getClients().stream().forEach((client) -> {                
                 barChooser.getItems().add(client);
@@ -60,13 +64,33 @@ public class LoginSheetController implements Initializable, ControlledScreen {
     }
     
     public void handleLogin(ActionEvent e){
-        
-        
-        //read the chosen bar/client
+        /*
+        Handles the pressing of the login button.
+        Creates a log in the database table client_logs and sets the clientisactive value to true in succes
+        Shows an error message if the active clients have been altered in the meantime forcing the client to login again
+        */
         if(init.getVN().validateLastClientLog())
         {
+            System.out.println(init.getDB());
             init.setCurBar(((Client)barChooser.getSelectionModel().getSelectedItem()).getBar());
             init.setCurClient((Client)barChooser.getSelectionModel().getSelectedItem());
+			if(init.getDB().runUpdate(String.format("INSERT INTO client_logs(client_id,client_log_type,log_date) VALUES (%d , true, NOW())",init.getCurClient().getID())) &&
+                    //set the current client_is_active state to true
+                    init.getDB().runUpdate(String.format("UPDATE clients SET client_is_active=true, last_client_update = NOW() WHERE client_id = %d ",init.getCurClient().getID())) &&
+                    init.getDB().commit()){
+                //set the screen to the bar screen
+                myController.setScreen(ScreensFrameWork.BARID);
+                ((Button)e.getSource()).setDisable(true);
+            }
+            else
+            {
+                //someone else has chosen a bar first
+                loadComponents();
+                Alert alert = new Alert(AlertType.INFORMATION);
+                alert.setTitle("Communicatie Fout");
+                alert.setContentText("Er is iets misgegaan met het communiceren met de database");
+                alert.showAndWait();
+            }
         }
         else
         {
@@ -77,8 +101,5 @@ public class LoginSheetController implements Initializable, ControlledScreen {
             alert.setContentText("Iemand anders heeft tegelijk een bar geselecteerd. Selecteer opnieuw.");
             alert.showAndWait();
         }
-        //set the screen to the bar screen
-        myController.setScreen(ScreensFrameWork.BARID);
-        ((Button)e.getSource()).setDisable(true);
     }
 }

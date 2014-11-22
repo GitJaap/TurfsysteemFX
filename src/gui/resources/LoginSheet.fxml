@@ -7,7 +7,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<GridPane fx:id="gridPane" alignment="CENTER" hgap="10.0" prefHeight="251.0" prefWidth="470.0" vgap="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controllers.LoginSheetController">
+<GridPane id="mainFxmlClass" fx:id="gridPane" alignment="CENTER" hgap="10.0" prefHeight="251.0" prefWidth="470.0" stylesheets="@loginsheet.css" vgap="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controllers.LoginSheetController">
   <columnConstraints>
       <ColumnConstraints hgrow="NEVER" minWidth="10.0" />
     <ColumnConstraints hgrow="NEVER" minWidth="10.0" />
@@ -20,7 +20,7 @@
       <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="NEVER" />
   </rowConstraints>
    <children>
-      <Label fx:id="topLabel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="35.0" prefWidth="193.0" text="Welkom" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+      <Label id="welcome-text" fx:id="topLabel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="35.0" prefWidth="193.0" text="Welkom" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
       <Label fx:id="userLabel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="40.0" prefWidth="143.0" text="Username:" GridPane.columnIndex="1" GridPane.hgrow="NEVER" GridPane.rowIndex="1" />
       <Label fx:id="passLabel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="40.0" prefWidth="121.0" text="Password:" GridPane.columnIndex="1" GridPane.hgrow="NEVER" GridPane.rowIndex="2" />
       <TextField fx:id="userField" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="25.0" prefWidth="158.0" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="1" />

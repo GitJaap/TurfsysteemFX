@@ -34,10 +34,9 @@ public class DataInitializer {
 		df = new DecimalFormat("\u20ac0.00", otherSymbols);
 		//initialize other variables
         ppc = new ProductPriceClass();
-        reInitializeStart();
 
 	}
-	public void reInitializeStart(){
+	public void reInitializeClients(){
 		//check if all logged-in clients are actually logged in, otherwise log them out
 		vn.validateClients();
 		//retrieve only the visible bars from the database
@@ -53,7 +52,7 @@ public class DataInitializer {
 			dB.runQuery(String.format("Select client_id,client_name FROM clients WHERE bar_id = %d AND client_visibility = true AND client_is_active = false",bars.get(j).getID()));
 			dB.commit();
 			while(dB.next())
-				bars.get(j).addClient(new Client(dB.getInt(1),dB.getStr(2), bars.get(j)));	
+				bars.get(j).addClient(new Client(dB.getInt(1),dB.getStr(2), bars.get(j)));
 		}
 	}
 	public void reInitializeBar(){
