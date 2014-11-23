@@ -7,26 +7,29 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<GridPane id="mainFxmlClass" fx:id="gridPane" alignment="CENTER" hgap="10.0" prefHeight="251.0" prefWidth="470.0" stylesheets="@loginsheet.css" vgap="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controllers.LoginSheetController">
+<GridPane id="mainFxmlClass" fx:id="gridPane" alignment="CENTER" hgap="10.0" prefHeight="360.0" prefWidth="632.0" stylesheets="@loginsheet.css" vgap="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controllers.LoginSheetController">
   <columnConstraints>
-      <ColumnConstraints hgrow="NEVER" minWidth="10.0" />
-    <ColumnConstraints hgrow="NEVER" minWidth="10.0" />
-    <ColumnConstraints hgrow="NEVER" maxWidth="139.0" minWidth="10.0" prefWidth="139.0" />
+      <ColumnConstraints hgrow="NEVER" maxWidth="183.0" minWidth="10.0" prefWidth="183.0" />
+    <ColumnConstraints hgrow="NEVER" maxWidth="217.0" minWidth="10.0" prefWidth="197.0" />
+    <ColumnConstraints hgrow="NEVER" maxWidth="219.0" minWidth="10.0" prefWidth="152.0" />
   </columnConstraints>
   <rowConstraints>
     <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="NEVER" />
+      <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="NEVER" />
     <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="NEVER" />
       <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="NEVER" />
       <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="NEVER" />
   </rowConstraints>
    <children>
       <Label id="welcome-text" fx:id="topLabel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="35.0" prefWidth="193.0" text="Welkom" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
-      <Label fx:id="userLabel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="40.0" prefWidth="143.0" text="Username:" GridPane.columnIndex="1" GridPane.hgrow="NEVER" GridPane.rowIndex="1" />
-      <Label fx:id="passLabel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="40.0" prefWidth="121.0" text="Password:" GridPane.columnIndex="1" GridPane.hgrow="NEVER" GridPane.rowIndex="2" />
-      <TextField fx:id="userField" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="25.0" prefWidth="158.0" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="1" />
-      <PasswordField fx:id="passField" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-      <Button fx:id="loginButton" mnemonicParsing="false" onAction="#handleLogin" text="Login" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="3" />
-      <ChoiceBox fx:id="barChooser" prefWidth="150.0" GridPane.rowIndex="2" />
-      <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Kies PC en Bar" GridPane.hgrow="NEVER" GridPane.rowIndex="1" GridPane.vgrow="NEVER" />
+      <Label fx:id="userLabel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="40.0" prefWidth="143.0" text="Username:" GridPane.columnIndex="1" GridPane.hgrow="NEVER" GridPane.rowIndex="2" />
+      <Label fx:id="passLabel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="40.0" prefWidth="121.0" text="Password:" GridPane.columnIndex="1" GridPane.hgrow="NEVER" GridPane.rowIndex="3" />
+      <TextField fx:id="userField" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="25.0" prefWidth="158.0" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="2" />
+      <PasswordField fx:id="passField" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+      <Button fx:id="loginButton" mnemonicParsing="false" onAction="#handleLogin" text="Login" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="4" />
+      <ChoiceBox fx:id="barChooser" prefWidth="150.0" GridPane.rowIndex="3" />
+      <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Kies PC en Bar" GridPane.hgrow="NEVER" GridPane.rowIndex="2" GridPane.vgrow="NEVER" />
+      <CheckBox fx:id="adminCheckBox" mnemonicParsing="false" text="Beheer" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+      <Label fx:id="feedBackLabel" alignment="TOP_LEFT" maxWidth="1.7976931348623157E308" prefHeight="89.0" prefWidth="219.0" textFill="#d01010" wrapText="true" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.rowSpan="2" />
    </children>
 </GridPane>

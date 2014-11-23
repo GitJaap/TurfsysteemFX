@@ -17,21 +17,21 @@ import javafx.scene.Parent;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 import database.*;
+import javafx.util.Pair;
 
 /** Main controller class sitting as a top layer to manage the screens of the program.
  *  
  *  @author (large part taken from oracle)
  */
 public class ScreensController  extends StackPane {
-    //Holds the screens to be displayed and references to the data
-
-    private HashMap<String, Node> screens = new HashMap<>();
+    //Holds the screens to be displayed and references to the data and controller class 
+    private HashMap<String, Pair<Node, ControlledScreen>> screens = new HashMap<>();
     
     // Reference to store the data from the database
-    DataInitializer init = new DataInitializer();
-    
-    public ScreensController() {
+    DataInitializer init;
+    public ScreensController(DataInitializer initIn) {
         super();
+        init = initIn;
     }
     
     //returns the initializer reference
@@ -40,13 +40,19 @@ public class ScreensController  extends StackPane {
     }
 
     //Add the screen to the collection
-    public void addScreen(String name, Node screen) {
-        screens.put(name, screen);
+    public void addScreen(String name, Node screen, ControlledScreen controller) {
+        Pair<Node, ControlledScreen> pair = new Pair<>(screen,controller);
+        screens.put(name, pair);
     }
 
     //Returns the Node with the appropriate name
     public Node getScreen(String name) {
-        return screens.get(name);
+        return screens.get(name).getKey();
+    }
+    
+    //returns the controller with the appropriate name
+    public ControlledScreen getController(String name){
+        return screens.get(name).getValue();
     }
 
     //Loads the fxml file, add the screen to the screens collection and
@@ -59,10 +65,10 @@ public class ScreensController  extends StackPane {
             //set the screencontroller and DataInitializer
             myScreenController.setScreenParent(this);
             myScreenController.setDataInitializer(init);
-            myScreenController.loadComponents();
+           
             // now add the controller adress to the node so it is usable later in the program
             loadScreen.setUserData(myScreenController);
-            addScreen(name, loadScreen);
+            addScreen(name, loadScreen, myScreenController);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -85,7 +91,8 @@ public class ScreensController  extends StackPane {
                     @Override
                     public void handle(ActionEvent t) {
                         getChildren().remove(0);                    //remove the displayed screen
-                        getChildren().add(0, screens.get(name));     //add the screen
+                        getController(name).loadComponents();             //load the components of the specified screen
+                        getChildren().add(0, getScreen(name));     //add the screen
                         Timeline fadeIn = new Timeline(
                                 new KeyFrame(Duration.ZERO, new KeyValue(opacity, 0.0)),
                                 new KeyFrame(new Duration(800), new KeyValue(opacity, 1.0)));
@@ -96,7 +103,8 @@ public class ScreensController  extends StackPane {
 
             } else {
                 setOpacity(0.0);
-                getChildren().add(screens.get(name));       //no one else been displayed, then just show
+                getController(name).loadComponents();     //still load the components of the specified screen
+                getChildren().add(getScreen(name));       //no one else been displayed, then just show
                 Timeline fadeIn = new Timeline(
                         new KeyFrame(Duration.ZERO, new KeyValue(opacity, 0.0)),
                         new KeyFrame(new Duration(2500), new KeyValue(opacity, 1.0)));

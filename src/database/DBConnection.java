@@ -1,6 +1,12 @@
 package database;
-import java.sql.*;
-import java.util.*;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class DBConnection {
 	// connection strings
@@ -136,7 +142,9 @@ public class DBConnection {
 			return null;
 		}
 	}
-	//return the next column in a row as an integer
+	/**
+     * return the next column in a row as an integer moving the cursor one place
+     */
 	public int getNextInt(int colNum){
 		int resultInt;
 		try{
@@ -329,6 +337,7 @@ public class DBConnection {
 			e.printStackTrace();
 		}
 	}
+    //returns the boolean from the desired column number
 	public boolean getBool(int colNum)
 	{
 		try{
@@ -339,4 +348,22 @@ public class DBConnection {
 			return false;
 		}
 	}
+    
+    //executes a prepared statement
+    public boolean executePreparedStatement(PreparedStatement pIn){
+        try{
+           result = pIn.executeQuery();
+           rsmd = result.getMetaData();
+           return true;
+        }
+        catch(SQLException e){
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    //Connection getter used for creating preparedStatements outside this class
+    public Connection getCon(){
+        return con;
+    }
 }

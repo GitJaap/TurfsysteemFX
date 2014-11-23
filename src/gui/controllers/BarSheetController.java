@@ -22,7 +22,6 @@ import javafx.scene.layout.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -58,7 +57,6 @@ public class BarSheetController implements Initializable, ControlledScreen {
     @FXML private Label nameLabel;
     @FXML private Label ageLabel;
     @FXML private Label balanceLabel;
-    @FXML private ImageView fotoView;
     @FXML private Label clockLabel;
     //declare components to fit in productPane
     //since they vary they cannot be defined in FXML
@@ -80,13 +78,15 @@ public class BarSheetController implements Initializable, ControlledScreen {
         bindToTime(clockLabel);
     }    
    
-    
+    /**
+     * Calls the initializeProducts function and loads those products as buttons on the screen
+     */
     @Override public void loadComponents()
     {
         //load the products from the database
         ppc = init.getPPC();
         init.getVN().validateProducts(ppc);
-        init.reInitializeBar();
+        init.reInitializeProducts();
         productButtonHandler = new ProductButtonHandler(this,init);
         //initialize the productButtons
 		productButtons =  new Button[ppc.getProductClassesSize()][];
@@ -235,7 +235,6 @@ public class BarSheetController implements Initializable, ControlledScreen {
         {
             nameLabel.setText("Naam Persoon");
             nameLabel.disableProperty().set(true);
-            fotoView.disableProperty().set(true);
             ageLabel.setDisable(true);
             balanceLabel.setDisable(true);
             balanceLabel.setText("Saldo: ");

@@ -8,9 +8,18 @@ import database.data.Client;
 import database.data.Product;
 import database.data.ProductClass;
 import database.data.ProductPriceClass;
-//This class reads the database to initialize the GUI variables
+/**
+* This class reads the database to initialize the GUI variables and servers as the main namespace for all data/database/variable acces
+* 
+* 
+**/
 public class DataInitializer {
-
+    
+    //login variables used in creating logs in the close operation
+    private int logType;
+    public static final int NOT_LOGGED_IN = 0;
+    public static final int USER_LOGGED_IN = 1;
+    public static final int ADMIN_LOGGED_IN = 2;
 	//variables
 	private DBConnection dB = new DBConnection(); //initialize database connection	
 	private Validation vn = new Validation(dB);
@@ -24,6 +33,7 @@ public class DataInitializer {
     //create a format for displaying cash amount
 	private DecimalFormatSymbols otherSymbols;
 	private DecimalFormat df;
+    
 
 	public DataInitializer()
 	{
@@ -34,6 +44,7 @@ public class DataInitializer {
 		df = new DecimalFormat("\u20ac0.00", otherSymbols);
 		//initialize other variables
         ppc = new ProductPriceClass();
+        logType = NOT_LOGGED_IN;
 
 	}
 	public void reInitializeClients(){
@@ -55,8 +66,7 @@ public class DataInitializer {
 				bars.get(j).addClient(new Client(dB.getInt(1),dB.getStr(2), bars.get(j)));
 		}
 	}
-	public void reInitializeBar(){
-		System.out.println(ppc);
+	public void reInitializeProducts(){
 		//now insert for this price_class the product_classes like eten drinken shift
 		dB.runQuery("Select product_class_id,class_name,class_color_hex from product_class");
 		dB.commit();
@@ -78,7 +88,7 @@ public class DataInitializer {
 					+ "AND p.product_price_class_id = %d "
 					+ "AND b.product_bar_visibility = true "
 					+ "AND b.bar_id = %d;"
-					,ppc.getProductClassID(j),ppc.getID(),1));
+					,ppc.getProductClassID(j),ppc.getID(), curBar.getID()));
 			dB.commit();
 			while(dB.next())
 			ppc.addProduct(new Product(dB.getInt(1),dB.getInt(2),dB.getInt(3),dB.getStr(4)),j);
@@ -122,6 +132,16 @@ public class DataInitializer {
 		return curBar;
 	}
     public int getAdminID(){
-        return 1;
+        return adminID;
+    }
+    public void setAdminID(int IDin){
+        adminID = IDin;
+    }
+    public int getLogType(){
+        return logType;
+    }
+    
+    public void setLogType(int logTypeIn){
+        logType = logTypeIn;
     }
 }

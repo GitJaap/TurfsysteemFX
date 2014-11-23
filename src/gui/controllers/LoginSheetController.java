@@ -12,13 +12,17 @@ import javafx.fxml.Initializable;
 import javafx.scene.layout.GridPane;
 import database.*;
 import database.data.Bar;
+import database.Login;
 import database.data.Client;
 import gui.main.ScreensFrameWork;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 
 /**
  *
@@ -29,6 +33,10 @@ public class LoginSheetController implements Initializable, ControlledScreen {
     private ScreensController myController;
     private DataInitializer init;
     @FXML ChoiceBox barChooser;
+    @FXML CheckBox adminCheckBox;
+    @FXML TextField userField;
+    @FXML TextField passField;
+    @FXML Label feedBackLabel;
     
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -69,31 +77,66 @@ public class LoginSheetController implements Initializable, ControlledScreen {
         Creates a log in the database table client_logs and sets the clientisactive value to true in succes
         Shows an error message if the active clients have been altered in the meantime forcing the client to login again
         */
-        if(init.getVN().validateLastClientLog())
+        if(init.getVN().validateLastClientLog()) //check for more recent than known logins
         {
-            System.out.println(init.getDB());
-            init.setCurBar(((Client)barChooser.getSelectionModel().getSelectedItem()).getBar());
-            init.setCurClient((Client)barChooser.getSelectionModel().getSelectedItem());
-			if(init.getDB().runUpdate(String.format("INSERT INTO client_logs(client_id,client_log_type,log_date) VALUES (%d , true, NOW())",init.getCurClient().getID())) &&
-                    //set the current client_is_active state to true
-                    init.getDB().runUpdate(String.format("UPDATE clients SET client_is_active=true, last_client_update = NOW() WHERE client_id = %d ",init.getCurClient().getID())) &&
-                    init.getDB().commit()){
-                //set the screen to the bar screen
-                myController.setScreen(ScreensFrameWork.BARID);
-                ((Button)e.getSource()).setDisable(true);
+            boolean admin = adminCheckBox.selectedProperty().getValue();
+            if(admin){
+                if(Login.doAdminLogin(init, userField.getText(), passField.getText(), ((Client)barChooser.getSelectionModel().getSelectedItem()).getBar().getID() )){
+                    init.setCurBar(((Client)barChooser.getSelectionModel().getSelectedItem()).getBar());
+                    init.setCurClient((Client)barChooser.getSelectionModel().getSelectedItem());
+                    if(init.getDB().runUpdate(String.format("INSERT INTO client_logs(client_id,client_log_type,log_date) VALUES (%d , true, NOW())",init.getCurClient().getID())) &&
+                            //set the current client_is_active state to true
+                            init.getDB().runUpdate(String.format("UPDATE clients SET client_is_active=true, last_client_update = NOW() WHERE client_id = %d ",init.getCurClient().getID())) &&
+                            init.getDB().commit()){
+                        System.out.println("client logged in");
+                         //set the screen to the admin screen
+                        init.setLogType(DataInitializer.ADMIN_LOGGED_IN);
+                        myController.setScreen(ScreensFrameWork.ADMINID);
+                    }
+                    else{//some communication error has occured
+                            loadComponents();
+                            Alert alert = new Alert(AlertType.INFORMATION);
+                            alert.setTitle("Communicatie Fout");
+                            alert.setContentText("Er is iets misgegaan met het communiceren met de database");
+                            alert.showAndWait();
+                        }
+                }
+                else{ //login info is incorrect
+                    feedBackLabel.setText("Ongeldige Gebruiker / Wachtwoord");
+                    userField.setText("");
+                    passField.setText("");
+                }
             }
-            else
-            {
-                //someone else has chosen a bar first
-                loadComponents();
-                Alert alert = new Alert(AlertType.INFORMATION);
-                alert.setTitle("Communicatie Fout");
-                alert.setContentText("Er is iets misgegaan met het communiceren met de database");
-                alert.showAndWait();
+            else{//admin has not been selected
+                if(Login.doRegularLogin(init, userField.getText(), passField.getText(), ((Client)barChooser.getSelectionModel().getSelectedItem()).getBar().getID() )){
+                    init.setCurBar(((Client)barChooser.getSelectionModel().getSelectedItem()).getBar());
+                    init.setCurClient((Client)barChooser.getSelectionModel().getSelectedItem());
+                    if(init.getDB().runUpdate(String.format("INSERT INTO client_logs(client_id,client_log_type,log_date) VALUES (%d , true, NOW())",init.getCurClient().getID())) &&
+                            //set the current client_is_active state to true
+                            init.getDB().runUpdate(String.format("UPDATE clients SET client_is_active=true, last_client_update = NOW() WHERE client_id = %d ",init.getCurClient().getID())) &&
+                            init.getDB().commit()){
+                        System.out.println("client logged in");
+                         //set the screen to the admin screen
+                        init.setLogType(DataInitializer.USER_LOGGED_IN);
+                        myController.setScreen(ScreensFrameWork.BARID);
+                    }
+                    else{//some communication error has occured
+                            loadComponents();
+                            Alert alert = new Alert(AlertType.INFORMATION);
+                            alert.setTitle("Communicatie Fout");
+                            alert.setContentText("Er is iets misgegaan met het communiceren met de database");
+                            alert.showAndWait();
+                        }
+                }
+                else{ //login info is incorrect
+                    feedBackLabel.setText("Ongeldige Gebruikernaam / Wachtwoord");
+                    userField.setText("");
+                    passField.setText("");
+                }
+                
             }
         }
-        else
-        {
+        else{ //client_log_id is not validated
             //someone else has chosen a bar first
             loadComponents();
             Alert alert = new Alert(AlertType.INFORMATION);
