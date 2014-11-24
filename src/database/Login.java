@@ -39,11 +39,15 @@ public abstract class Login {
                 
                 adminID = init.getDB().getNextInt(1);
                 boolean logType = init.getDB().getBool(2);
-                if(logType == false)
+                if(logType == false){
                     //when no admin has logged in to the bar yet set admin ID to default
                     init.setAdminID(1);
-                else
+                    init.setAdminName("default");
+                }
+                else{
                     init.setAdminID(adminID);
+                    init.setAdminName(userName);
+                }
                 return true;
             }
         }
@@ -76,6 +80,7 @@ public abstract class Login {
                 init.getDB().commit();
                 //set the current admin
                 init.setAdminID(adminID);
+                init.setAdminName(userName);
                 return true;
             }
         }

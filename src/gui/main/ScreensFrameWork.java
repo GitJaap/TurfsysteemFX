@@ -20,7 +20,7 @@ public class ScreensFrameWork extends Application {
     DataInitializer init = new DataInitializer();
     
     //declare the names and ids of fxml files 
-    public static String BARFile = "/gui/resources/BarSheet2.fxml";
+    public static String BARFile = "/gui/resources/BarSheet2_1.fxml";
     public static String BARID = "BAR";
     public static String LOGINFile = "/gui/resources/LoginSheet.fxml";
     public static String LOGINID = "LOGIN";

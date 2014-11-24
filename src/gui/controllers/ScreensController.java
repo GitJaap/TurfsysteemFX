@@ -91,7 +91,7 @@ public class ScreensController  extends StackPane {
                     @Override
                     public void handle(ActionEvent t) {
                         getChildren().remove(0);                    //remove the displayed screen
-                        getController(name).loadComponents();             //load the components of the specified screen
+                        getController(name).delayedInitialize();             //load the components of the specified screen
                         getChildren().add(0, getScreen(name));     //add the screen
                         Timeline fadeIn = new Timeline(
                                 new KeyFrame(Duration.ZERO, new KeyValue(opacity, 0.0)),
@@ -103,7 +103,7 @@ public class ScreensController  extends StackPane {
 
             } else {
                 setOpacity(0.0);
-                getController(name).loadComponents();     //still load the components of the specified screen
+                getController(name).delayedInitialize();     //still load the components of the specified screen
                 getChildren().add(getScreen(name));       //no one else been displayed, then just show
                 Timeline fadeIn = new Timeline(
                         new KeyFrame(Duration.ZERO, new KeyValue(opacity, 0.0)),

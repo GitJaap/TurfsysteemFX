@@ -16,5 +16,5 @@ public interface ControlledScreen {
      //this allow the database info holding object to be passed to the screens
      public void setDataInitializer(DataInitializer initIn);
      //Used for initialization after dataInitializer has been set
-     public void loadComponents();
+     public void delayedInitialize();
   } 

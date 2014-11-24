@@ -30,6 +30,7 @@ public class DataInitializer {
 	private Client curClient;
 	private Bar curBar;
     private int adminID;
+    private String adminName;
     //create a format for displaying cash amount
 	private DecimalFormatSymbols otherSymbols;
 	private DecimalFormat df;
@@ -144,4 +145,7 @@ public class DataInitializer {
     public void setLogType(int logTypeIn){
         logType = logTypeIn;
     }
+    
+    public void setAdminName(String name){adminName = name;}
+    public String getAdminName(){return adminName;}
 }

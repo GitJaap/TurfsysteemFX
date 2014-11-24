@@ -10,6 +10,7 @@ import gui.controllers.BarSheetController;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -34,6 +35,8 @@ public class ProductButtonHandler extends BarHandler {
         int[][] orders = bsc.getOrders();
         int multiplication = bsc.getMultiplication();
         VBox orderBox = bsc.getOrderBox();
+        Label totalLabel = bsc.getTotalLabel();
+        int totalPrice = 0;
         
        for(int i = 0; i < ppc.getProductClassesSize();i++){
 			//create eventhandlers for product buttons that are pressed
@@ -90,7 +93,10 @@ public class ProductButtonHandler extends BarHandler {
                     orders[i][j]++;
                     orderedButtons[i][j].setText(orders[i][j] + " x " + ppc.getProductName(i, j));
                 }
+                totalPrice += orders[i][j] * ppc.getProductPrice(i, j);
             }
 		}
+       //update the totallabel text
+       totalLabel.setText("Totaal " + init.getdf().format((double)totalPrice/100) + "  ");
     }
 }

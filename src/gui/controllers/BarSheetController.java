@@ -12,11 +12,15 @@ import java.util.ResourceBundle;
 import javafx.fxml.Initializable;
 import database.data.*;
 import gui.handlers.ProductButtonHandler;
+import gui.services.BarUpdateService;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
+import javafx.concurrent.ScheduledService;
+import javafx.concurrent.Task;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.event.ActionEvent;
@@ -57,7 +61,10 @@ public class BarSheetController implements Initializable, ControlledScreen {
     @FXML private Label nameLabel;
     @FXML private Label ageLabel;
     @FXML private Label balanceLabel;
+    @FXML private Label cardCheckLabel;
     @FXML private Label clockLabel;
+    @FXML private Label totalLabel; //used for showing total order price
+    @FXML private Label sessionLabel; // used for showing session info like clientid adminid, price class
     //declare components to fit in productPane
     //since they vary they cannot be defined in FXML
     private Button[][] productButtons;
@@ -66,6 +73,7 @@ public class BarSheetController implements Initializable, ControlledScreen {
     private Button[][] orderIncrementers;
     private HBox[][] orderBoxHor;
     private int[][] orders;
+    BarUpdateService updater;
     /**
      * Initializes the controller class.
      */
@@ -79,15 +87,34 @@ public class BarSheetController implements Initializable, ControlledScreen {
     }    
    
     /**
+     * Delayed initialize method used to initialize the updater thread using the DataInitializer object 
+     */
+    @Override public void delayedInitialize(){
+        //create the update service
+        updater = new BarUpdateService(init);
+        updater.periodProperty().set(Duration.millis(500));
+        updater.start();
+        updater.lastValueProperty().addListener((observable, oldVal, newVal) -> {
+            if(newVal == BarUpdateService.NEEDS_PRODUCT_UPDATE)
+                loadComponents();
+            else if(newVal == BarUpdateService.NEEDS_ADMIN_UPDATE)
+                setSessionLabel();
+        });
+    }
+    /**
      * Calls the initializeProducts function and loads those products as buttons on the screen
      */
-    @Override public void loadComponents()
+    public void loadComponents()
     {
+        //remove all children from product pane
+        productPane.getChildren().clear();
         //load the products from the database
         ppc = init.getPPC();
         init.getVN().validateProducts(ppc);
         init.reInitializeProducts();
+        setSessionLabel();
         productButtonHandler = new ProductButtonHandler(this,init);
+        totalLabel.setText("Totaal \u20ac0,00  ");
         //initialize the productButtons
 		productButtons =  new Button[ppc.getProductClassesSize()][];
         orderedButtons = new Button[ppc.getProductClassesSize()][];
@@ -114,7 +141,7 @@ public class BarSheetController implements Initializable, ControlledScreen {
                 {
                     productButtons[i][j] = new Button();
                     productButtons[i][j].setText(ppc.getProductName(i, j) +"\n"+ init.getdf().format((double)ppc.getProductPrice(i, j)/100));
-                    productButtons[i][j].setStyle(String.format("-fx-background-color: linear-gradient(#FFFFFF, #B3B3B3), #%s; -fx-background-insets: 0, 2;",ppc.getProductClass(i).getColor()));
+                    productButtons[i][j].setStyle(String.format("-fx-background-color: #B3B3B3, #%s; -fx-background-insets: 0, 2;",ppc.getProductClass(i).getColor()));
                     productPane.add(productButtons[i][j],gridColumnIndex,gridRowIndex);
                     productButtons[i][j].setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
                     gridColumnIndex ++;
@@ -130,6 +157,9 @@ public class BarSheetController implements Initializable, ControlledScreen {
         }
     }
     
+    public void setSessionLabel(){
+        sessionLabel.setText(String.format("Huidige prijsklasse: %s    Huidige verantwoordelijke beheerder ID: %d(%s)    Huidige client ID: %d(%s)", ppc.getName(), init.getAdminID(), init.getAdminName(), init.getCurClient().getID(), init.getCurClient().getName()));
+    }
       
     @Override //sets parent controllor class used for switching between screens
     public void setScreenParent(ScreensController screenPage) {
@@ -245,7 +275,10 @@ public class BarSheetController implements Initializable, ControlledScreen {
         }
     }
     
-    
+   /**
+    * binds a label to the current system time
+    * @param label to be bound
+    */
   private void bindToTime(Label label) {
     Timeline timeline = new Timeline(
       new KeyFrame(Duration.seconds(0),
@@ -274,4 +307,5 @@ public class BarSheetController implements Initializable, ControlledScreen {
     public Button[][] getOrderDecrementers(){return orderDecrementers;}
     public Button[][] getOrderIncrementers(){return orderIncrementers;}
     public HBox[][] getOrderBoxHor(){return orderBoxHor;}
+    public Label getTotalLabel(){return totalLabel;}
 }

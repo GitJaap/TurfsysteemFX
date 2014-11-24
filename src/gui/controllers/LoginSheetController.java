@@ -44,7 +44,7 @@ public class LoginSheetController implements Initializable, ControlledScreen {
     }
     
     @Override
-    public void loadComponents(){
+    public void delayedInitialize(){
         /*
         loads the bars and clients in the loginscreen combobox
         */
@@ -94,7 +94,7 @@ public class LoginSheetController implements Initializable, ControlledScreen {
                         myController.setScreen(ScreensFrameWork.ADMINID);
                     }
                     else{//some communication error has occured
-                            loadComponents();
+                            delayedInitialize();
                             Alert alert = new Alert(AlertType.INFORMATION);
                             alert.setTitle("Communicatie Fout");
                             alert.setContentText("Er is iets misgegaan met het communiceren met de database");
@@ -121,7 +121,7 @@ public class LoginSheetController implements Initializable, ControlledScreen {
                         myController.setScreen(ScreensFrameWork.BARID);
                     }
                     else{//some communication error has occured
-                            loadComponents();
+                            delayedInitialize();
                             Alert alert = new Alert(AlertType.INFORMATION);
                             alert.setTitle("Communicatie Fout");
                             alert.setContentText("Er is iets misgegaan met het communiceren met de database");
@@ -138,7 +138,7 @@ public class LoginSheetController implements Initializable, ControlledScreen {
         }
         else{ //client_log_id is not validated
             //someone else has chosen a bar first
-            loadComponents();
+            delayedInitialize();
             Alert alert = new Alert(AlertType.INFORMATION);
             alert.setTitle("Communicatie Conflict");
             alert.setContentText("Iemand anders heeft tegelijk een bar geselecteerd. Selecteer opnieuw.");

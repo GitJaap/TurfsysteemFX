@@ -28,7 +28,7 @@ public class AdminController implements ControlledScreen {
     }
 
     @Override
-    public void loadComponents() {
+    public void delayedInitialize() {
         
     }
     

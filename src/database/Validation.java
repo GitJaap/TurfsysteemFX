@@ -10,6 +10,7 @@ public class Validation {
 	private DBConnection dB;
 	private int lastClientLogID;
 	private int lastAdminChangeID;
+    private int lastAdminLogID;
 	
 	public Validation(DBConnection dBIn)
 	{
@@ -18,6 +19,7 @@ public class Validation {
 		lastAdminChangeID = 0;
         // set the client log pointer to the last
         validateLastClientLog();
+        validateLastAdminLog();
 	}
 	
 	//check for clients that have not send an update for more then CLIENT_UPDATE_INTERVAL seconds
@@ -91,4 +93,23 @@ public class Validation {
 			return false;
 		}
 	}
+    /**
+     * Check if there has been a more recent than currently know admin login action.
+     * @return true if no admin has logged in after last check
+     *         false if admin has logged in afeter last check
+     */
+    public boolean validateLastAdminLog(){
+        dB.runQuery("SELECT admin_log_id FROM admin_logs ORDER BY admin_log_id DESC LIMIT 1");
+		dB.commit();
+		int newID = dB.getNextInt(1);
+		if(newID == lastAdminLogID)
+			return true;
+		else if(newID == -9999)//there is no log yet
+			return true;
+		else
+		{
+			lastAdminLogID = newID;
+			return false;
+		}
+    }
 }
