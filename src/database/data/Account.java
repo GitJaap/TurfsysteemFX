@@ -61,7 +61,7 @@ public class Account {
     
     @Override
     public String toString(){
-        return name+ "\t" + Integer.toString(balance / 100) + "," + Integer.toString(Math.abs(balance % 100));
+        return name; 
     }
     
     public void setCards(ArrayList<Card> cards){

@@ -251,6 +251,47 @@ public class DBConnection {
 			return null;
 		}
 	}
+    
+    public boolean[] getColumnBool(int colNum){
+		int nRows = 0;
+		int i = 0;
+		boolean[] ret;
+		if(colNum > 0){
+			try {
+				//get amount of rows
+                try{
+                    result.getBoolean(colNum);
+                    //statement above executes properly so we are at the first row
+                    nRows++;
+                }
+                catch(SQLException ex){}
+				while(result.next()){
+					nRows ++;
+				}
+				//Check if there is more then 0 rows
+				if(nRows == 0)
+					return null;
+				ret = new boolean[nRows]; //create the Intarray with the now known size
+				result.first();
+				ret[i] = result.getBoolean(colNum);
+				i ++;
+				while(result.next()){
+					ret[i] = result.getBoolean(colNum);
+					i++;
+				}
+                //now go back to the first row
+                result.first();
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return null;
+			}
+			return ret;
+		}
+		else{
+			return null;
+		}
+	}
 
 	//sets the transaction isolation level
 	public boolean setIsolationLevel(int iL){

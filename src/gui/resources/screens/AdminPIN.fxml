@@ -135,6 +135,5 @@
             </Tab>
         </tabs>
       </TabPane>
-      <TextFlow prefHeight="200.0" prefWidth="200.0" />
    </children>
 </AnchorPane>

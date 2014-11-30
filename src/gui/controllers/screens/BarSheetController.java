@@ -13,6 +13,7 @@ import javafx.fxml.Initializable;
 import database.data.*;
 import gui.handlers.ProductButtonHandler;
 import gui.services.BarUpdateService;
+import gui.services.ClientUpdateService;
 import gui.services.ReadCardService;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -87,6 +88,7 @@ public class BarSheetController implements Initializable, ControlledScreen {
     private HBox[][] orderBoxHor;
     private int[][] orders;
     BarUpdateService updater;
+    ClientUpdateService clientUpdater;
     /**
      * Initializes the controller class.
      */
@@ -105,7 +107,7 @@ public class BarSheetController implements Initializable, ControlledScreen {
      * Delayed initialize method used to initialize the updater thread using the DataInitializer object 
      */
     @Override public void delayedInitialize(){
-        //create the update service
+        //create the update services
         updater = new BarUpdateService(init);
         updater.periodProperty().set(Duration.millis(500));
         updater.start();
@@ -115,6 +117,10 @@ public class BarSheetController implements Initializable, ControlledScreen {
             else if(newVal == BarUpdateService.NEEDS_ADMIN_UPDATE)
                 setSessionLabel();
         });
+        
+        clientUpdater = new ClientUpdateService(init);
+        clientUpdater.setPeriod(Duration.seconds(1));
+        clientUpdater.start();
         
         //create the readcardservice
         cardReader = new ReadCardService(ReadCardService.READ_CONTINUOUS);

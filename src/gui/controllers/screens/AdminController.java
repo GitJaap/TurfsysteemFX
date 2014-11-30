@@ -23,14 +23,12 @@ public abstract class AdminController implements ControlledScreen, Initializable
     protected boolean listenerHasBeenAdded = false;
     protected int tabID;
     protected AdminTabListener tabListener;
-    protected int counter;
     @FXML protected TabPane tabs;
     
     
     @Override
     public void initialize(URL url, ResourceBundle rb){
         tabID = 0; //set default tab to home
-        counter = 0;
     }
    @Override //sets parent controllor class used for switching between screens
     public void setScreenParent(ScreensController screenPage) {
