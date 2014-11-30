@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package gui.controllers;
+package gui.controllers.screens;
 
 import database.DataInitializer;
 import database.Transaction;
@@ -13,12 +13,18 @@ import javafx.fxml.Initializable;
 import database.data.*;
 import gui.handlers.ProductButtonHandler;
 import gui.services.BarUpdateService;
+import gui.services.ReadCardService;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
 import javafx.scene.control.*;
@@ -31,6 +37,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.util.Duration;
+import org.controlsfx.control.PopOver;
 
 /**
  * FXML Controller class
@@ -49,6 +56,9 @@ public class BarSheetController implements Initializable, ControlledScreen {
     private ProductButtonHandler productButtonHandler;
     private int multiplication;
     private String historyText;
+    private Account curAccount;
+    private ReadCardService cardReader;
+    private String curUID;
     //get components from FXML
     @FXML private GridPane productPane;
     @FXML private TextField multiplicationField;
@@ -65,6 +75,9 @@ public class BarSheetController implements Initializable, ControlledScreen {
     @FXML private Label clockLabel;
     @FXML private Label totalLabel; //used for showing total order price
     @FXML private Label sessionLabel; // used for showing session info like clientid adminid, price class
+    @FXML private Button bookButton;
+    @FXML private AnchorPane mainPane;
+    @FXML private Label topLabel;
     //declare components to fit in productPane
     //since they vary they cannot be defined in FXML
     private Button[][] productButtons;
@@ -84,6 +97,8 @@ public class BarSheetController implements Initializable, ControlledScreen {
         
         //create the clock
         bindToTime(clockLabel);
+        
+        curAccount = new Account();
     }    
    
     /**
@@ -100,6 +115,19 @@ public class BarSheetController implements Initializable, ControlledScreen {
             else if(newVal == BarUpdateService.NEEDS_ADMIN_UPDATE)
                 setSessionLabel();
         });
+        
+        //create the readcardservice
+        cardReader = new ReadCardService(ReadCardService.READ_CONTINUOUS);
+        cardReader.setPeriod(Duration.millis(300));
+        //add listener to cardreader which changes the curAccount and labels when a card is read
+        cardReader.lastValueProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+            curUID = newValue;
+            reloadAccountInfo();
+        });
+        
+        cardReader.start();
+        
+        topLabel.setText("Proteus " + init.getCurBar().getName());
     }
     /**
      * Calls the initializeProducts function and loads those products as buttons on the screen
@@ -212,66 +240,163 @@ public class BarSheetController implements Initializable, ControlledScreen {
     }
     
     public void orderButtonHandler(ActionEvent e){
-        //execute the transaction
-        String tempText = Transaction.doProductTransaction(init, orders, curPaymentMethod)+"\n";
-        //show the transaction in the historyField
-        tempText +="U heeft de volgende producten besteld: \n";
-		int totalPrice = 0;
-		for(int i =0; i < ppc.getProductClassesSize();i++){
+        //check if there is more than one order
+        boolean ordersAreValid = false;
+        for(int i =0; i < ppc.getProductClassesSize();i++){
             for(int j =0; j < ppc.getProductsSize(i);j++)
 				{
-					if(orders[i][j] > 0){
-						totalPrice += orders[i][j] * ppc.getProductPrice(i, j);
-						orderBox.getChildren().remove(orderBoxHor[i][j]);
-						tempText += orders[i][j] + " x " + ppc.getProductName(i, j) +" voor "+ init.getdf().format((double)ppc.getProductPrice(i, j)*orders[i][j]/100) + "\n";
-						orders[i][j] = 0;
-					}
-				}
-			}
-			tempText+="Voor een totaal van: " + init.getdf().format((double)totalPrice/100) + "!\n\n";
-            historyText = tempText + historyText;
-            historyField.setText(historyText);
-            
-            //disable the orderbutton and re-enable the paymentmethod buttons
-            orderButton.setDisable(true);
-            cashButton.setDisable(false);
-            pinButton.setDisable(false);
-            schrapButton.setDisable(false);
-    }
-    
-    //checks if a card is being read and show the person
-    public void keyPressedHandler(KeyEvent event){
-        if(event.getCode().equals(KeyCode.ENTER))
-        {   
-            curPaymentMethod = Transaction.CARD;
-            nameLabel.setText("Jaap Wesdorp");
-            nameLabel.setDisable(false);
-            ageLabel.setDisable(false);
-            balanceLabel.setDisable(false);
-            //get the saldo from the database
-            init.getDB().runQuery("SELECT balance FROM accounts WHERE account_name = 'Jaap'");
-            int balance = init.getDB().getNextInt(1);
-            init.getDB().commit();
-            balanceLabel.setText("Saldo: " + init.getdf().format((double)balance/100));
-            pinButton.disableProperty().set(true);
-            cashButton.disableProperty().set(true);
-            schrapButton.disableProperty().set(true);
-            orderButton.setDisable(false);
+                    if(orders[i][j] > 0){
+                        ordersAreValid = true;
+                    }
+                }
+        }
+        if(ordersAreValid){
+            //execute the transaction
+            String tempText = Transaction.doProductTransaction(init, orders, curPaymentMethod, curAccount.getID())+"\n";
+            //show the transaction in the historyField
+            int totalPrice = 0;
+            for(int i =0; i < ppc.getProductClassesSize();i++){
+                for(int j =0; j < ppc.getProductsSize(i);j++)
+                    {
+                        if(orders[i][j] > 0){
+                            totalPrice += orders[i][j] * ppc.getProductPrice(i, j);
+                            orderBox.getChildren().remove(orderBoxHor[i][j]);
+                            tempText += orders[i][j] + " x " + ppc.getProductName(i, j) +" "+ init.getdf().format((double)ppc.getProductPrice(i, j)*orders[i][j]/100) + "\n";
+                            orders[i][j] = 0;
+                        }
+                    }
+                }
+                tempText+="Voor een totaal van: " + init.getdf().format((double)totalPrice/100) + "!\n\n";
+                historyText = tempText + historyText;
+                historyField.setText(historyText);
+
+                //disable the orderbutton and re-enable the paymentmethod buttons
+                if(curPaymentMethod == Transaction.CARD){
+                    disableAllPaymentButtons();
+                    reloadAccountInfo();
+                }
+                else{
+                    enableAllPaymentButtons();
+                }
+                totalLabel.setText("Totaal: " + init.getdf().format(0) + " ");
         }
     }
-    //checks if the card is removed and disables the user
-    public void keyReleasedHandler(KeyEvent event){
-        if(event.getCode().equals(KeyCode.ENTER))
-        {
-            nameLabel.setText("Naam Persoon");
-            nameLabel.disableProperty().set(true);
-            ageLabel.setDisable(true);
-            balanceLabel.setDisable(true);
-            balanceLabel.setText("Saldo: ");
-            pinButton.disableProperty().set(false);
-            cashButton.disableProperty().set(false);
-            schrapButton.disableProperty().set(false);
-            orderButton.setDisable(true);
+    
+    /**
+     * shows a popup with the available account to book to when bookbutton is pressed
+     * 
+     * 
+     */ 
+    public void bookButtonHandler(ActionEvent e){
+        //get the wegBoek_accounts values from the database
+        List<Account> accountList = new ArrayList<>();
+         //load the previous wegboek_accounts into the target list
+        init.getDB().runQuery("SELECT account_id, account_name, balance, credit_limit FROM accounts INNER JOIN wegboek_accounts USING (account_id)");
+        init.getDB().commit();
+         //get the results
+        int [] ids = init.getDB().getColumnInt(1);
+        String[] names = init.getDB().getColumnStr(2);
+        int[] balances = init.getDB().getColumnInt(3);
+        int[] credits = init.getDB().getColumnInt(4);
+        //add them to the list and create gui objects to show them
+        VBox container = new VBox();
+        PopOver pop = new PopOver(container);
+        HBox[] rows;
+        Button[] choiceButtons;
+        accountList.clear();
+        if(ids != null){
+            rows = new HBox[ids.length / 4 + 1];
+            choiceButtons = new Button[ids.length];
+            //add tghe hboxes to the container
+            for(int i = 0; i < rows.length;i++){
+                rows[i] = new HBox();
+                container.getChildren().add(rows[i]);
+            }
+            for(int i = 0; i < ids.length;i++){
+                if(ids[i] > 3) {// check for not using the standard PIN SCHRAP or CASH accounts
+                    accountList.add(new Account(ids[i], names[i], balances[i], credits[i]));
+                    choiceButtons[i] = new Button(names[i]);
+                    choiceButtons[i].setPrefHeight(100);
+                    choiceButtons[i].setPrefWidth(150);
+                    rows[i/4].getChildren().add(choiceButtons[i]);
+                    choiceButtons[i].setOnAction((ActionEvent event) -> {
+                        for(int j =0; j < choiceButtons.length;j++)
+                            if(event.getSource() == choiceButtons[j]){
+                                curAccount = accountList.get(j);
+                                curPaymentMethod = Transaction.CARD;
+                                orderButtonHandler(new ActionEvent());
+                                pop.hide();
+                            }
+                    });
+                    
+                }
+            }
+        }
+        //show the popup
+        pop.show((Button)e.getSource());
+        pop.setArrowLocation(PopOver.ArrowLocation.RIGHT_CENTER);
+        pop.detachedTitleProperty().set("     Selecteer accounts voor wegboeken");
+        pop.hideOnEscapeProperty().set(true);
+        mainPane.disableProperty().bind(pop.showingProperty());
+        pop.setX(mainPane.getWidth() / 2 - pop.getWidth() / 2);
+        pop.setY(mainPane.getHeight() / 2 - pop.getHeight() / 2);
+        pop.setDetached(true);
+        pop.setHeight(400);
+        pop.setWidth(600);
+    }
+    
+    public void enableAllPaymentButtons(){
+        pinButton.disableProperty().set(false);
+        schrapButton.disableProperty().set(false);
+        cashButton.disableProperty().set(false);
+        bookButton.disableProperty().set(false);
+        
+        orderButton.disableProperty().set(true);
+    }
+    
+    public void disableAllPaymentButtons(){
+        pinButton.disableProperty().set(true);
+        schrapButton.disableProperty().set(true);
+        cashButton.disableProperty().set(true);
+        bookButton.disableProperty().set(true);
+
+        orderButton.disableProperty().set(false);
+    }
+    /**
+     * reloads the account info belonging to the current UID
+     * shows the values in the labels
+     */
+    public void reloadAccountInfo(){
+        //now search for the account belonging to this card in the database
+        if(!curUID.equals("")){
+                init.getDB().runQuery(String.format("Select account_id, account_name, balance, credit_limit FROM accounts INNER JOIN cards USING (account_id) WHERE card_uid = '%s' LIMIT 1",curUID));
+                init.getDB().commit();
+                if(init.getDB().getNextStr() != null){
+                    curAccount.setID(init.getDB().getInt(1));
+                    curAccount.setName(init.getDB().getStr(2));
+                    curAccount.setBalance(init.getDB().getInt(3));
+                    curAccount.setCredit(init.getDB().getInt(4));
+                    nameLabel.setText(curAccount.getName());
+                    balanceLabel.setText(init.getdf().format(((double)curAccount.getBalance()) / 100));
+                    cardCheckLabel.setText("Pas aanwezig");
+                    disableAllPaymentButtons();
+                    curPaymentMethod = Transaction.CARD;
+                }
+                else{//unknown card has been found
+                    curAccount = new Account();
+                    cardCheckLabel.setText("Onbekende Pas");
+                    nameLabel.setText("");
+                    balanceLabel.setText("");
+                    enableAllPaymentButtons();
+                }
+        }
+        else{//no card is being read
+            curAccount = new Account();
+            cardCheckLabel.setText("Geen pas");
+            nameLabel.setText("");
+            balanceLabel.setText("");
+            enableAllPaymentButtons();
+            
         }
     }
     
@@ -295,6 +420,8 @@ public class BarSheetController implements Initializable, ControlledScreen {
     timeline.setCycleCount(Animation.INDEFINITE);
     timeline.play();
    }
+  
+  
     
     //getters and setters used in the external file ProductButtonHandler
     public Button[][] getProductButtons(){return productButtons;}

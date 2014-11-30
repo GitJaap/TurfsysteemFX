@@ -163,7 +163,9 @@ public class DBConnection {
 		}
 	}
 
-	//returns all the strings in a column in StringArray form
+	/**
+     * returns all the strings in a column in StringArray form
+     */ 
 	public String[] getColumnStr(int colNum)	{
 		int nRows = 0;
 		int i = 0;
@@ -171,6 +173,13 @@ public class DBConnection {
 		if(colNum > 0){
 			try {
 				//get amount of rows
+                //check for being at the first row or before the first
+                try{
+                    result.getString(colNum);
+                    //statement above executes properly so we are at the first row
+                    nRows++;
+                }
+                catch(SQLException ex){} // we are before the start of the result set
 				while(result.next()){
 					nRows ++;
 				}
@@ -185,6 +194,7 @@ public class DBConnection {
 					ret[i] = result.getString(colNum);
 					i++;
 				}
+                result.first();
 
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -197,7 +207,10 @@ public class DBConnection {
 		}
 
 	}
-	//Returns the specified column as an array of integers(works only if columns are integers)
+	/**
+     * Returns the specified column as an array of integers(works only if columns are integers)
+     *
+     **/
 	public int[] getColumnInt(int colNum){
 		int nRows = 0;
 		int i = 0;
@@ -205,6 +218,12 @@ public class DBConnection {
 		if(colNum > 0){
 			try {
 				//get amount of rows
+                try{
+                    result.getInt(colNum);
+                    //statement above executes properly so we are at the first row
+                    nRows++;
+                }
+                catch(SQLException ex){}
 				while(result.next()){
 					nRows ++;
 				}
@@ -219,6 +238,8 @@ public class DBConnection {
 					ret[i] = result.getInt(colNum);
 					i++;
 				}
+                //now go back to the first row
+                result.first();
 
 			} catch (SQLException e) {
 				e.printStackTrace();

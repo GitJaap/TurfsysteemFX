@@ -2,7 +2,10 @@ package database.data;
 
 import java.util.ArrayList;
 
-
+/**
+ * Datastructure with getters and setters for the bar variable read from the database
+ * @author Jaap
+ */
 
 public class Bar {
 	private int id;

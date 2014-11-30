@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.embed.swing.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="428.0" prefWidth="433.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controllers.dialogs.MemberChoiceController">
+   <children>
+      <TextField fx:id="inputField" layoutX="95.0" layoutY="22.0" onAction="#handleTextEnter" prefHeight="25.0" prefWidth="244.0" />
+      <Label alignment="CENTER_RIGHT" layoutX="51.0" layoutY="26.0" prefHeight="17.0" prefWidth="44.0" text="Naam: " textAlignment="RIGHT" />
+      <ListView fx:id="memberListView" layoutX="76.0" layoutY="67.0" prefHeight="295.0" prefWidth="283.0" />
+      <Button fx:id="okButton" layoutX="316.0" layoutY="372.0" mnemonicParsing="false" onAction="#handleOKPressed" prefHeight="38.0" prefWidth="86.0" text="Ok" />
+      <Button layoutX="33.0" layoutY="372.0" mnemonicParsing="false" onAction="#handleCancelPressed" prefHeight="38.0" prefWidth="86.0" text="Cancel" />
+   </children>
+</AnchorPane>

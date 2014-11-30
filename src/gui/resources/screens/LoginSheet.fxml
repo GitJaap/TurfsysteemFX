@@ -7,7 +7,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<GridPane id="mainFxmlClass" fx:id="gridPane" alignment="CENTER" hgap="10.0" prefHeight="360.0" prefWidth="632.0" stylesheets="@loginsheet.css" vgap="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controllers.LoginSheetController">
+<GridPane id="mainFxmlClass" fx:id="gridPane" alignment="CENTER" hgap="10.0" prefHeight="360.0" prefWidth="632.0" stylesheets="@loginsheet.css" vgap="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controllers.screens.LoginSheetController">
   <columnConstraints>
       <ColumnConstraints hgrow="NEVER" maxWidth="183.0" minWidth="10.0" prefWidth="183.0" />
     <ColumnConstraints hgrow="NEVER" maxWidth="217.0" minWidth="10.0" prefWidth="197.0" />

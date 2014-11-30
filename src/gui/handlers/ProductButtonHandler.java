@@ -6,7 +6,7 @@
 package gui.handlers;
 
 import database.DataInitializer;
-import gui.controllers.BarSheetController;
+import gui.controllers.screens.BarSheetController;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;

@@ -1,5 +1,9 @@
 package database.data;
 
+/**
+ * Datastructure with getters and setters for the client variable read from the database
+ * @author Jaap
+ */
 public class Client {
 	private int id;
 	private String name;

@@ -7,7 +7,7 @@ package gui.handlers;
 
 import database.DataInitializer;
 import database.data.ProductPriceClass;
-import gui.controllers.BarSheetController;
+import gui.controllers.screens.BarSheetController;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 

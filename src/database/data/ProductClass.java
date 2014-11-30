@@ -2,6 +2,10 @@ package database.data;
 
 import java.util.ArrayList;
 
+/**
+ * Datastructure with getters and setters for the productclass variable read from the database
+ * @author Jaap
+ */
 public class ProductClass {
 	private int id;
 	private String name;

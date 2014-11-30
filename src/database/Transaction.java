@@ -21,12 +21,12 @@ public abstract class Transaction {
 	 * @param init
 	 * @param orders
 	 * @param transactionType
+     * @param accountID account Id used for transaction when transactionType is CARD
      * @return A string with information about the succes of the transaction
 	 */
-	public static String doProductTransaction(DataInitializer init, int[][] orders, int transactionType){
+	public static String doProductTransaction(DataInitializer init, int[][] orders, int transactionType, int accountID){
         //first calculate the total price of the transaction
 		int totalPrice = 0;
-        int accountID;
 		for(int i =0; i < init.getPPC().getProductClassesSize();i++)
 		{
 			for(int j =0; j < init.getPPC().getProductsSize(i);j++)
@@ -41,7 +41,7 @@ public abstract class Transaction {
             //set the account to the account of the transaction type and update the database
             accountID = CASHACCOUNTID;
             //now try and execute the transactions
-            if(updateDatabaseWithDebitTransaction(init, orders, accountID, CASH, totalPrice)){
+            if(updateDatabaseWithDebitTransaction(init, accountID, CASH, totalPrice)){
                 if(updateDatabaseWithCreditProductTransaction(init, orders, accountID, CASH, totalPrice)){
                     return "Contante Transactie geslaagd!";
                 }
@@ -51,7 +51,7 @@ public abstract class Transaction {
             //set the account to the account of the transaction type and update the database
             accountID = PINACCOUNTID;
             //now try and execute the transactions
-            if(updateDatabaseWithDebitTransaction(init, orders, accountID, PIN, totalPrice)){
+            if(updateDatabaseWithDebitTransaction(init, accountID, PIN, totalPrice)){
                 if(updateDatabaseWithCreditProductTransaction(init, orders, accountID, PIN, totalPrice)){
                     return "PIN-Transactie geslaagd!";
                 }
@@ -61,14 +61,13 @@ public abstract class Transaction {
             //set the account to the account of the transaction type and update the database
             accountID = SCHRAPACCOUNTID;
             //now try and execute the transactions
-            if(updateDatabaseWithDebitTransaction(init, orders, accountID, SCHRAP, totalPrice)){
+            if(updateDatabaseWithDebitTransaction(init, accountID, SCHRAP, totalPrice)){
                 if(updateDatabaseWithCreditProductTransaction(init, orders, accountID, SCHRAP, totalPrice)){
                     return "Schrapkaart Transactie geslaagd!";
                 }
             }
             return "Error communicatie database";
         case CARD:
-			accountID = CardReader.readCard();
 			//now select the account and check its balance also locking the row so no one else can now read from it
 			long t = System.currentTimeMillis();
 			init.getDB().runQuery(String.format("SELECT balance FROM accounts WHERE account_id = %d FOR UPDATE",accountID ));
@@ -102,7 +101,7 @@ public abstract class Transaction {
      * @param totalPrice
      * @return 
      */
-    private static boolean updateDatabaseWithCreditProductTransaction(DataInitializer init, int[][] orders, int accountID,int transactionType, int totalPrice){
+    public static boolean updateDatabaseWithCreditProductTransaction(DataInitializer init, int[][] orders, int accountID,int transactionType, int totalPrice){
         int adminID = init.getAdminID();
         int clientID = init.getCurClient().getID();
         //create a boolean value to store the succes of the transaction
@@ -145,7 +144,7 @@ public abstract class Transaction {
      * @param totalPrice
      * @return 
      */
-    private static boolean updateDatabaseWithDebitTransaction(DataInitializer init, int[][] orders, int accountID, int transactionType, int totalPrice){
+    public static boolean updateDatabaseWithDebitTransaction(DataInitializer init, int accountID, int transactionType, int totalPrice){
         int adminID = init.getAdminID();
         int clientID = init.getCurClient().getID();
         //create a boolean value to store the succes of the transaction
@@ -157,7 +156,7 @@ public abstract class Transaction {
             //create the new transaction
             succes &= init.getDB().runUpdate(String.format("INSERT INTO transactions_debit VALUES (%d, %d, %d, %d, %d, NOW(), %d)",transactionID, accountID,adminID, clientID, transactionType, totalPrice));
             //update the account balance
-			succes &= init.getDB().runUpdate(String.format("UPDATE accounts SET balance=balance-%d WHERE account_id = %d",totalPrice,accountID));
+			succes &= init.getDB().runUpdate(String.format("UPDATE accounts SET balance=balance+%d WHERE account_id = %d",totalPrice,accountID));
             //finally commit the transaction to free the locked rows
 			succes &= init.getDB().commit();
             return succes;

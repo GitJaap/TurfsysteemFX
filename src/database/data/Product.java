@@ -1,6 +1,9 @@
 package database.data;
 import java.util.*;
-
+/**
+ * Datastructure with getters and setters for the product variable read from the database
+ * @author Jaap
+ */
 public class Product {
 	private int id;
 	private int price;

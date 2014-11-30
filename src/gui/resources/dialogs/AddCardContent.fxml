@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" fx:id="anchorPane" prefHeight="333.0" prefWidth="352.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controllers.dialogs.AddCardController">
+   <children>
+      <ImageView fx:id="check1Image" fitHeight="150.0" fitWidth="200.0" layoutX="26.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../pictures/HelpIcon.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="check2Image" fitHeight="150.0" fitWidth="200.0" layoutX="178.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../pictures/HelpIcon.png" />
+         </image>
+      </ImageView>
+      <Label layoutX="77.0" layoutY="164.0" text="Check 1">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <Label layoutX="229.0" layoutY="164.0" text="Check 2">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <Button fx:id="restartButton" layoutX="55.0" layoutY="277.0" mnemonicParsing="false" onAction="#handleRestart" onKeyPressed="#handleRestartButtonKey" prefHeight="42.0" prefWidth="242.0" style="-fx-background-color: #FF3333;" text="LEES OPNIEUW" />
+      <TextField fx:id="cardNameField" layoutX="57.0" layoutY="215.0" prefHeight="25.0" prefWidth="242.0" promptText="Voer hier een eventuele beschrijving in" />
+   </children>
+</AnchorPane>

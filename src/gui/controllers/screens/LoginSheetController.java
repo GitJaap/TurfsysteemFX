@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package gui.controllers;
+package gui.controllers.screens;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -91,7 +91,7 @@ public class LoginSheetController implements Initializable, ControlledScreen {
                         System.out.println("client logged in");
                          //set the screen to the admin screen
                         init.setLogType(DataInitializer.ADMIN_LOGGED_IN);
-                        myController.setScreen(ScreensFrameWork.ADMINID);
+                        myController.setScreen(ScreensFrameWork.ADMINHome);
                     }
                     else{//some communication error has occured
                             delayedInitialize();

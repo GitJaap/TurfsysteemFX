@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="369.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controllers.dialogs.ListSelectionViewerController">
+    <children>
+        <VBox prefHeight="300.0" prefWidth="500.0">
+           <children>
+               <TextField fx:id="inputField" />
+               <Label alignment="CENTER" prefWidth="1000" text="Zoek hierboven" />
+            <HBox prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+               <children>
+                  <ListView fx:id="sourceView" prefHeight="200.0" prefWidth="200.0" />
+                  <VBox alignment="CENTER" prefHeight="258.0" prefWidth="100.0" spacing="10.0">
+                     <children>
+                        <Button alignment="CENTER" mnemonicParsing="false" onAction="#handleSourceToTarget" text="&gt;  " />
+                        <Button alignment="CENTER" mnemonicParsing="false" onAction="#handleTargetToSource" text="  &lt;" />
+                        <Button mnemonicParsing="false" onAction="#handleAllTargetToSource" text="&lt;&lt;" />
+                     </children>
+                  </VBox>
+                  <ListView fx:id="targetView" prefHeight="200.0" prefWidth="200.0" />
+               </children>
+            </HBox>
+           </children>
+        </VBox>
+      <Button contentDisplay="CENTER" layoutX="377.0" layoutY="317.0" mnemonicParsing="false" onAction="#handleSaveButton" prefHeight="38.0" prefWidth="109.0" text="Opslaan" />
+      <Button contentDisplay="CENTER" layoutX="14.0" layoutY="317.0" mnemonicParsing="false" onAction="#handleCancelButton" prefHeight="38.0" prefWidth="109.0" text="Cancel" />
+    </children>
+</AnchorPane>
