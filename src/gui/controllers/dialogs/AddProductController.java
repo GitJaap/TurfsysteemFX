@@ -117,7 +117,7 @@ public class AddProductController {
             try{
                 PreparedStatement query = init.getDB().getCon().prepareStatement("SELECT product_type_id FROM product_types WHERE product_name = ? AND is_removed=false");
                 query.setString(1, productName);
-                query.executeQuery();
+                init.getDB().executePreparedStatement(query);
                 init.getDB().commit();
                 if(init.getDB().getNextInt(1) == -9999){ //name doesnt exist yet
                     //get the new product id
