@@ -7,12 +7,16 @@ package gui.controllers.dialogs;
 
 import database.DataInitializer;
 import database.data.Account;
+import database.observable.ObservableProduct;
 import java.net.URL;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import static javafx.collections.FXCollections.copy;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -26,7 +30,7 @@ import org.controlsfx.control.PopOver;
  *
  * @author Jaap
  */
-public class ListSelectionViewerController implements Initializable {
+public class ProductBarSelectionController implements Initializable {
 
     @FXML ListView sourceView;
     @FXML ListView targetView;
@@ -34,6 +38,8 @@ public class ListSelectionViewerController implements Initializable {
     
     private DataInitializer init;
     private PopOver parentPop;
+    private ObservableList<ObservableProduct> productData =  FXCollections.observableArrayList();;
+    private int barID;
     
     /**
      * Initializes the controller class.
@@ -43,9 +49,12 @@ public class ListSelectionViewerController implements Initializable {
         // TODO
     }
     
-    public void delayedInitialize(DataInitializer initIn, PopOver pop){
+    public void delayedInitialize(DataInitializer initIn, PopOver pop, ObservableList<ObservableProduct> productData, int barID){
         init = initIn;
         parentPop = pop;
+        copy(productData,this.productData);
+ 
+        this.barID = barID;
         //add listener to input text
         handleInputTextChange();
         inputField.textProperty().addListener(new ChangeListener<String>(){
@@ -55,22 +64,10 @@ public class ListSelectionViewerController implements Initializable {
                 handleInputTextChange();
       }
         });
-        //load the previous wegboek_accounts into the target list
-        init.getDB().runQuery("SELECT account_id, account_name, balance, credit_limit FROM accounts INNER JOIN wegboek_accounts USING (account_id)");
-        init.getDB().commit();
-         //get the results
-        int [] ids = init.getDB().getColumnInt(1);
-        String[] names = init.getDB().getColumnStr(2);
-        int[] balances = init.getDB().getColumnInt(3);
-        int[] credits = init.getDB().getColumnInt(4);
-        //show them in the listview
-        targetView.getItems().clear();
-        if(ids != null){
-            for(int i = 0; i < ids.length;i++){
-                if(ids[i] > 3) // check for not using the standard PIN SCHRAP or CASH accounts
-                targetView.getItems().add(new Account(ids[i], names[i], balances[i], credits[i]));
-            }
-        }
+        //load the previous products into the target list
+        targetView.setItems(productData);
+       
+        
         
     }
     
@@ -79,13 +76,12 @@ public class ListSelectionViewerController implements Initializable {
     public void handleInputTextChange(){
         
         String input = inputField.getText();
-        int[] ids;
-        String[] names;
-        int[] balances;
-        int[] credits;
-        //now start searching for accounts
+        sourceView.getItems().clear();
+        //now start searching for products
         try{
-            PreparedStatement query = init.getDB().getCon().prepareStatement("SELECT account_id, account_name, balance, credit_limit FROM accounts WHERE account_name LIKE ? ");
+            PreparedStatement query = init.getDB().getCon().prepareStatement("Select p.product_name, p.product_type_id, p.product_version_id FROM product_types as p INNER JOIN (SELECT MAX(product_version_id) as product_version_id,product_type_id " +
+					"FROM product_types GROUP BY product_type_id) as ss " + 
+					"Using(product_version_id,product_type_id) WHERE p.is_removed = false AND p.product_name LIKE ?"); 
             query.setString(1, '%' + input + '%');
             init.getDB().executePreparedStatement(query);
             init.getDB().commit();
@@ -93,18 +89,8 @@ public class ListSelectionViewerController implements Initializable {
         catch(SQLException ex){ // SQL ERROR occured in statement
             ex.printStackTrace();
         }
-        //get the results
-        ids = init.getDB().getColumnInt(1);
-        names = init.getDB().getColumnStr(2);
-        balances = init.getDB().getColumnInt(3);
-        credits = init.getDB().getColumnInt(4);
-        //show them in the listview
-        sourceView.getItems().clear();
-        if(ids != null){
-            for(int i = 0; i < ids.length;i++){
-                if(ids[i] > 3) // check for not using the standard PIN SCHRAP or CASH accounts
-                sourceView.getItems().add(new Account(ids[i], names[i], balances[i], credits[i]));
-            }
+        while(init.getDB().next()){
+            sourceView.getItems().add(new ObservableProduct(init.getDB().getInt(2), init.getDB().getStr(1), init.getDB().getInt(3)));
         }
         
     }
@@ -115,14 +101,14 @@ public class ListSelectionViewerController implements Initializable {
     public void handleSourceToTarget(ActionEvent e){
         if(!sourceView.getSelectionModel().isEmpty()){
             boolean alreadyPresent = false;
-            Account selectedAcc = (Account)sourceView.getSelectionModel().getSelectedItem();
+            ObservableProduct selectedProduct = (ObservableProduct)sourceView.getSelectionModel().getSelectedItem();
             //check if account is already in the target list
             for(int i = 0; i < targetView.getItems().size(); i++){
-                if(((Account)targetView.getItems().get(i)).getID() == selectedAcc.getID())
+                if(((ObservableProduct)targetView.getItems().get(i)).getId() == selectedProduct.getId())
                     alreadyPresent = true;                
             }
             if(!alreadyPresent)
-                targetView.getItems().add(selectedAcc);
+                targetView.getItems().add(selectedProduct);
         }
     }
      /**
@@ -142,20 +128,38 @@ public class ListSelectionViewerController implements Initializable {
     public void handleAllTargetToSource(ActionEvent e){
         targetView.getItems().clear();
     }
+    
+    public void handleAllSourceToTarget(ActionEvent e){
+        for(int j = 0; j < sourceView.getItems().size(); j++){
+            boolean alreadyPresent = false;
+            ObservableProduct selectedProduct = (ObservableProduct)sourceView.getItems().get(j);
+            //check if account is already in the target list
+            for(int i = 0; i < targetView.getItems().size(); i++){
+                if(((ObservableProduct)targetView.getItems().get(i)).getId() == selectedProduct.getId())
+                    alreadyPresent = true;                
+            }
+            if(!alreadyPresent)
+                targetView.getItems().add(selectedProduct);
+        }
+    }
     /**
      * handles the pressing of the save button
-     * Saves all current account id in the database table wegboek_accounts
+     * Saves all current visibile products in the database
      * @param e 
      */
     public void handleSaveButton(ActionEvent e){
         boolean result = true;
-        //delete old wegboek_accounts entries
-        result &= init.getDB().runUpdate("DELETE FROM wegboek_accounts WHERE 1=1");
+        //delete old bar visibility entries
+        result &= init.getDB().runUpdate(String.format("DELETE FROM product_bar_visibility WHERE bar_id = %d", barID));
             //run updates to the database
             for(int i =0; i < targetView.getItems().size(); i++){
-                 result &= init.getDB().runUpdate(String.format("INSERT INTO wegboek_accounts(account_id) Values(%d)", ((Account)targetView.getItems().get(i)).getID()));
+                 result &= init.getDB().runUpdate(String.format("INSERT INTO product_bar_visibility(product_type_id, product_version_id, bar_id, product_bar_visibility) Values(%d, %d, %d, true)", 
+                         ((ObservableProduct)targetView.getItems().get(i)).getId(), ((ObservableProduct)targetView.getItems().get(i)).getVersionId(), barID));
             }
         if(result){
+            //send a log of the update
+            init.getDB().runQuery("SELECT current_product_price_class_id FROM admin_changes ORDER BY admin_change_id DESC LIMIT 1");
+            init.getDB().runUpdate(String.format("INSERT INTO admin_changes(current_product_price_class_id, admin_id, admin_change_date, admin_change_description) VALUES (%d, %d, NOW(), 'Bar visibility changed')", init.getDB().getNextInt(1), barID));
             init.getDB().commit();
         }
         else{

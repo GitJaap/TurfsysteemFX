@@ -10,7 +10,7 @@ import database.Transaction;
 import database.data.Account;
 import database.data.Card;
 import gui.controllers.dialogs.AddCardController;
-import gui.controllers.dialogs.ListSelectionViewerController;
+import gui.controllers.dialogs.BookAccountSelectionController;
 import gui.controllers.dialogs.MemberChoiceController;
 import gui.handlers.AdminTabListener;
 import gui.handlers.CardButtonHandler;
@@ -69,7 +69,6 @@ public class AdminPinController extends AdminController{
     private TextField corText2 = new TextField();
     private ReadCardService cardReader;
     private Button[] cardButtons;
-    ListSelectionView selectionView = new ListSelectionView();
     
     
     @FXML Label nameLabel;
@@ -399,9 +398,9 @@ public class AdminPinController extends AdminController{
     public void handleSelectBookAccounts(ActionEvent e){
         FXMLLoader myLoader =null;
         Parent loadScreen=null;
-        ListSelectionViewerController myScreenController=null;
+        BookAccountSelectionController myScreenController=null;
             try{            
-                myLoader = new FXMLLoader(getClass().getResource("/gui/resources/dialogs/ListSelectionViewer.fxml"));
+                myLoader = new FXMLLoader(getClass().getResource("/gui/resources/dialogs/BookAccountSelectionContent.fxml"));
                  loadScreen = (Parent) myLoader.load();
                 myScreenController = myLoader.getController();       
                 // now add the controller adress to the node so it is usable later in the program
@@ -413,8 +412,6 @@ public class AdminPinController extends AdminController{
         PopOver pop = new PopOver(loadScreen);
         myScreenController.delayedInitialize(init, pop);
         pop.show((Button)e.getSource());
-        selectionView.setCache(true);
-        selectionView.setCacheShape(true);
         pop.setX(mainPane.getWidth() / 2 - pop.getWidth() / 2);
         pop.setY(mainPane.getHeight() / 2 - pop.getHeight() / 2);
         pop.setDetached(true);

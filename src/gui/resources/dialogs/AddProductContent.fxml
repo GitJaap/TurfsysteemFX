@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<AnchorPane id="AnchorPane" prefHeight="760.0" prefWidth="570.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="gui.controllers.dialogs.AddProductController">
+   <children>
+      <Label layoutX="55.0" layoutY="52.0" prefHeight="24.0" prefWidth="129.0" text="Naam:" />
+      <Label layoutX="55.0" layoutY="103.0" prefHeight="24.0" prefWidth="121.0" text="Klasse:" />
+      <Label disable="true" layoutX="55.0" layoutY="569.0" prefHeight="24.0" prefWidth="103.0" text="Voorraad product:" />
+      <Label layoutX="55.0" layoutY="157.0" prefHeight="24.0" prefWidth="163.0" text="Zichtbaar bij bar:" />
+      <TextField fx:id="nameField" layoutX="245.0" layoutY="52.0" prefHeight="25.0" prefWidth="228.0" />
+      <ListView fx:id="barView" layoutX="245.0" layoutY="157.0" prefHeight="128.0" prefWidth="228.0" />
+      <Label layoutX="55.0" layoutY="342.0" prefHeight="17.0" prefWidth="149.0" text="Prijs per klasse:" />
+      <VBox fx:id="priceBox" layoutX="240.0" layoutY="346.0" prefHeight="200.0" prefWidth="228.0" />
+      <ComboBox disable="true" layoutX="252.0" layoutY="569.0" prefWidth="150.0" />
+      <Label disable="true" layoutX="55.0" layoutY="624.0" text="N per voorraad:" />
+      <TextField disable="true" layoutX="246.0" layoutY="620.0" />
+      <Button layoutX="480.0" layoutY="347.0" mnemonicParsing="false" onAction="#handleCopyDown" prefHeight="25.0" prefWidth="52.0" text="\\/" />
+      <Button layoutX="443.0" layoutY="702.0" mnemonicParsing="false" onAction="#handleSave" prefHeight="39.0" prefWidth="103.0" text="Opslaan" />
+      <Button layoutX="27.0" layoutY="702.0" mnemonicParsing="false" onAction="#handleCancel" prefHeight="39.0" prefWidth="103.0" text="Cancel" />
+      <ChoiceBox fx:id="classSelector" layoutX="245.0" layoutY="103.0" prefHeight="25.0" prefWidth="228.0" />
+   </children>
+</AnchorPane>

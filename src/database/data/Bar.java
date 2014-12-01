@@ -63,6 +63,10 @@ public class Bar {
 		if(clientIndex>=0 && clientIndex < clients.size())
 			clients.set(clientIndex, clientIn);
 	}
+    
+    public String toString(){
+        return name;
+    }
 }
 	
 	

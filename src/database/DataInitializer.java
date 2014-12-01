@@ -52,7 +52,7 @@ public class DataInitializer {
 		//check if all logged-in clients are actually logged in, otherwise log them out
 		vn.validateClients();
 		//retrieve only the visible bars from the database
-		dB.runQuery("Select bar_id, bar_name, current_bar_cash from bars where bar_visibility = true");
+		dB.runQuery("Select bar_id, bar_name, current_bar_cash FROM bars WHERE bar_visibility = true");
 		dB.commit();
 		bars = new ArrayList<>();
 		while(dB.next())
@@ -67,8 +67,24 @@ public class DataInitializer {
 				bars.get(j).addClient(new Client(dB.getInt(1),dB.getStr(2), bars.get(j)));
 		}
 	}
+    /**
+     * Reads and saves the products from the database belonging to the current price class and current bar in this dataInitializer object as ppc
+     * 
+     */
 	public void reInitializeProducts(){
-		//now insert for this price_class the product_classes like eten drinken shift
+        loadProducts(curBar.getID());
+	}
+      /**
+     * Reads and saves the products from the database belonging to the current price class'and a specified bar in this dataInitializer object as ppc
+     * 
+     */
+    public void reInitializeProducts(int barID){
+        loadProducts(barID);
+    }
+    
+    private void loadProducts(int barID){
+        //now insert for this price_class the product_classes like eten drinken shift
+        ppc.reset();
 		dB.runQuery("Select product_class_id,class_name,class_color_hex from product_class");
 		dB.commit();
 		while(dB.next())
@@ -89,12 +105,12 @@ public class DataInitializer {
 					+ "AND p.product_price_class_id = %d "
 					+ "AND b.product_bar_visibility = true "
 					+ "AND b.bar_id = %d;"
-					,ppc.getProductClassID(j),ppc.getID(), curBar.getID()));
+					,ppc.getProductClassID(j),ppc.getID(), barID));
 			dB.commit();
 			while(dB.next())
 			ppc.addProduct(new Product(dB.getInt(1),dB.getInt(2),dB.getInt(3),dB.getStr(4)),j);
 		}
-	}
+    }
 
 	//returns an array with all visible bars
 	public ArrayList<Bar> getBars(){

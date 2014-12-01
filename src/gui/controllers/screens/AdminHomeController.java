@@ -12,6 +12,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.VBox;
@@ -67,6 +68,7 @@ public class AdminHomeController extends AdminController{
             for(int i =0; i < ids.length; i++){
                 priceClassButtons[i] = new Button(names[i]);
                 priceClassButtons[i].setPrefWidth(Double.MAX_VALUE);
+                priceClassButtons[i].setAlignment(Pos.CENTER);
                 priceClassButtons[i].setOnAction((ActionEvent event) -> {
                     for(int j = 0; j < priceClassButtons.length; j++){
                         priceClassButtons[j].setDisable(false);

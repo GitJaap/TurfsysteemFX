@@ -78,4 +78,5 @@ public class ProductClass {
 		products.set(productIndex, productIn);
 	}
 	
+    public String toString(){return name;}
 }
