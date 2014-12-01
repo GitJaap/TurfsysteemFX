@@ -159,7 +159,7 @@ public class ProductBarSelectionController implements Initializable {
         if(result){
             //send a log of the update
             init.getDB().runQuery("SELECT current_product_price_class_id FROM admin_changes ORDER BY admin_change_id DESC LIMIT 1");
-            init.getDB().runUpdate(String.format("INSERT INTO admin_changes(current_product_price_class_id, admin_id, admin_change_date, admin_change_description) VALUES (%d, %d, NOW(), 'Bar visibility changed')", init.getDB().getNextInt(1), barID));
+            init.getDB().runUpdate(String.format("INSERT INTO admin_changes(current_product_price_class_id, admin_id, admin_change_date, admin_change_description) VALUES (%d, %d, NOW(), 'Bar visibility changed')", init.getDB().getNextInt(1), init.getAdminID()));
             init.getDB().commit();
         }
         else{

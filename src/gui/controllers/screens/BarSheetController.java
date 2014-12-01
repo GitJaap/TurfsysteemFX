@@ -142,6 +142,7 @@ public class BarSheetController implements Initializable, ControlledScreen {
     {
         //remove all children from product pane
         productPane.getChildren().clear();
+        orderBox.getChildren().clear();
         //load the products from the database
         ppc = init.getPPC();
         init.getVN().validateProducts(ppc);

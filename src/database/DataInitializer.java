@@ -93,7 +93,7 @@ public class DataInitializer {
 		//insert the visible products for this bar for each class and the current price class and the latest version id into ppc
 		for(int j=0; j < ppc.getProductClassesSize();j++)
 		{
-			dB.runQuery(String.format("SELECT p.product_version_id,p.product_type_id,p.product_price,p.product_name "
+			dB.runQuery(String.format("SELECT p.product_version_id,p.product_type_id,ppc.product_price,p.product_name "
 					+ "FROM product_types as p "
 					+ "INNER JOIN( "
 					+ "SELECT MAX(product_version_id) as product_version_id,product_type_id "
@@ -101,8 +101,9 @@ public class DataInitializer {
 					+ "Using(product_version_id,product_type_id) "
 					+ "INNER JOIN product_bar_visibility as b "
 					+ "USING (product_version_id,product_type_id) "
+                    + "INNER JOIN price_per_product_price_class as ppc USING (product_version_id, product_type_id)"
 					+ "WHERE p.product_class_id = %d "
-					+ "AND p.product_price_class_id = %d "
+					+ "AND ppc.product_price_class_id = %d "
 					+ "AND b.product_bar_visibility = true "
 					+ "AND b.bar_id = %d;"
 					,ppc.getProductClassID(j),ppc.getID(), barID));
